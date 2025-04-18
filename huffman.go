@@ -3,7 +3,6 @@ package huffman
 import (
 	"fmt"
 	"iter"
-	"math/bits"
 )
 
 // Elem directly computes the k^th element of the Huffman sequence of 64 elements.
@@ -41,8 +40,19 @@ func SeqN(n int) iter.Seq[uint64] {
 	}
 }
 
-// Len returns the length in bits of the k^th huffman elem in uv.
-func Len(uv uint64) int { return bits.TrailingZeros64(^uv) }
+// Len returns the length in bytes of the k^th huffman elem in uv.
+func Len(uv, max uint64) int {
+	var sz int = 1
+	omitLastByte := uv > 0 || uv != max
+	for range 7 {
+		if byte(uv) < 0xff && omitLastByte {
+			return sz
+		}
+		uv >>= 8
+		sz++
+	}
+	return sz
+}
 
 // Append appends the exact Huffman element onto b.
 //

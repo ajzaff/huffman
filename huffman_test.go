@@ -65,10 +65,18 @@ func TestSeq(t *testing.T) {
 	}
 }
 
+func TestLen9(t *testing.T) {
+	var i int
+	for x := range SeqN(9) {
+		t.Log(i, Len(x, Elem(8)), x, strconv.FormatUint(x, 2))
+		i++
+	}
+}
+
 func TestLen(t *testing.T) {
 	var i int
 	for x := range Seq() {
-		t.Log(i, Len(x), x, strconv.FormatUint(x, 2))
+		t.Log(i, Len(x, Elem(64)), x, strconv.FormatUint(x, 2))
 		i++
 	}
 }

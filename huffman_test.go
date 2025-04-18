@@ -76,7 +76,7 @@ func TestLen(t *testing.T) {
 func TestAppendSeqN_9(t *testing.T) {
 	var i int
 	for x := range SeqN(9) {
-		t.Logf("%d %s %x %x %d %d", i, strconv.FormatUint(x, 2), Append(nil, x), binary.AppendUvarint(nil, x), len(Append(nil, x)), len(binary.AppendUvarint(nil, x)))
+		t.Logf("%d %s %x %x %d %d", i, strconv.FormatUint(x, 2), Append(nil, x, Elem(8)), binary.AppendUvarint(nil, x), len(Append(nil, x, Elem(8))), len(binary.AppendUvarint(nil, x)))
 		i++
 	}
 }
@@ -84,7 +84,7 @@ func TestAppendSeqN_9(t *testing.T) {
 func TestAppendSeq(t *testing.T) {
 	var i int
 	for x := range Seq() {
-		t.Logf("%d %s %x %x %d %d", i, strconv.FormatUint(x, 2), Append(nil, x), binary.AppendUvarint(nil, x), len(Append(nil, x)), len(binary.AppendUvarint(nil, x)))
+		t.Logf("%d %s %x %x %d %d", i, strconv.FormatUint(x, 2), Append(nil, x, Elem(64)), binary.AppendUvarint(nil, x), len(Append(nil, x, Elem(64))), len(binary.AppendUvarint(nil, x)))
 		i++
 	}
 }

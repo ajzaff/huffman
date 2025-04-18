@@ -31,18 +31,13 @@ func SeqN(n int) iter.Seq[uint64] {
 			return
 		}
 		n--
-		var (
-			uv   uint64
-			mask uint64 = 1
-		)
-		for range n {
-			if !yield(uv) {
+		var uv uint64 = 1
+		for range n + 1 {
+			if !yield(uv - 1) {
 				return
 			}
-			uv |= mask
-			mask <<= 1
+			uv <<= 1
 		}
-		yield(1<<n - 1)
 	}
 }
 
@@ -54,11 +49,13 @@ func Len(uv uint64) int { return bits.TrailingZeros64(^uv) }
 // For Append to function correctly, uv must be a valid Huffman code
 // like those produced by Elem, Seq, or SeqN.
 //
-// Append panics if n is out of range.
-func Append(b []byte, uv uint64) []byte {
+// max should be set to the last element of the sequence, Elem(n-1).
+func Append(b []byte, uv, max uint64) []byte {
 	for i := 0; i < 64; i += 8 {
 		x := byte(uv >> i)
-		b = append(b, x)
+		if x > 0 || uv != max {
+			b = append(b, x)
+		}
 		if x < 0xff {
 			break
 		}

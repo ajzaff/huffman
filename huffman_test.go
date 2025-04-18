@@ -1,39 +1,40 @@
 package huffman
 
 import (
+	"encoding/binary"
 	"strconv"
 	"testing"
 )
 
-func TestElemZero_65(t *testing.T) {
+func TestElemZero(t *testing.T) {
 	defer func() {
 		if recover() != nil {
 			t.Fail()
 		}
 	}()
-	t.Log(Elem(0, 65))
+	t.Log(Elem(0))
 }
 
-func TestElem64_65(t *testing.T) {
+func TestElem64(t *testing.T) {
 	defer func() {
 		if recover() != nil {
 			t.Fail()
 		}
 	}()
-	t.Log(Elem(64, 65))
+	t.Log(Elem(64))
 }
 
 func TestElem4Seq(t *testing.T) {
 	for i := range 4 {
-		x := Elem(i, 4)
-		t.Log(i, strconv.FormatUint(x, 2))
+		x := Elem(i)
+		t.Log(i, x, strconv.FormatUint(x, 2))
 	}
 }
 
-func TestElem65Seq(t *testing.T) {
+func TestElemSeq(t *testing.T) {
 	for i := range 65 {
-		x := Elem(i, 65)
-		t.Log(i, strconv.FormatUint(x, 2))
+		x := Elem(i)
+		t.Log(i, x, strconv.FormatUint(x, 2))
 	}
 }
 
@@ -60,6 +61,30 @@ func TestSeq(t *testing.T) {
 	var i int
 	for x := range Seq() {
 		t.Log(i, x, strconv.FormatUint(x, 2))
+		i++
+	}
+}
+
+func TestLen(t *testing.T) {
+	var i int
+	for x := range Seq() {
+		t.Log(i, Len(x), x, strconv.FormatUint(x, 2))
+		i++
+	}
+}
+
+func TestAppendSeqN_9(t *testing.T) {
+	var i int
+	for x := range SeqN(9) {
+		t.Logf("%d %s %x %x %d %d", i, strconv.FormatUint(x, 2), Append(nil, x), binary.AppendUvarint(nil, x), len(Append(nil, x)), len(binary.AppendUvarint(nil, x)))
+		i++
+	}
+}
+
+func TestAppendSeq(t *testing.T) {
+	var i int
+	for x := range Seq() {
+		t.Logf("%d %s %x %x %d %d", i, strconv.FormatUint(x, 2), Append(nil, x), binary.AppendUvarint(nil, x), len(Append(nil, x)), len(binary.AppendUvarint(nil, x)))
 		i++
 	}
 }

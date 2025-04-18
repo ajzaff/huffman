@@ -1,25 +1,19 @@
 package huffman
 
 import (
-	"encoding/binary"
 	"fmt"
 	"iter"
 	"math/bits"
-	"slices"
 )
 
-// Elem directly computes the k^th element of the Huffman sequence of n elements.
+// Elem directly computes the k^th element of the Huffman sequence of 64 elements.
 //
 // Elem panics if k or n are out of range.
-func Elem(k, n int) uint64 {
-	k1 := k + 1
-	if k < 0 || n < 0 || k1 >= n || n > 65 {
-		if k1 == n {
-			return 1<<k - 1
-		}
-		panic(fmt.Errorf("n is out of range: %d", n))
+func Elem(k int) uint64 {
+	if k < 0 || k > 64 {
+		panic(fmt.Errorf("k is out of range: %d", k))
 	}
-	return 1<<k1 - 2
+	return 1<<k - 1
 }
 
 // Seq returns the full Huffman sequence of length 65 elements.
@@ -37,43 +31,37 @@ func SeqN(n int) iter.Seq[uint64] {
 			return
 		}
 		n--
-		var uv uint64
+		var (
+			uv   uint64
+			mask uint64 = 1
+		)
 		for range n {
 			if !yield(uv) {
 				return
 			}
-			uv |= 1
-			uv <<= 1
+			uv |= mask
+			mask <<= 1
 		}
 		yield(1<<n - 1)
 	}
 }
 
-// Len returns the length in bits of the k^th huffman elem of n elements.
-//
-// For Len to function correctly, uv must be a valid Huffman code
-// like those produced by Elem, Seq, or SeqN.
-//
-// Len panics if n is out of range.
-func Len(uv uint64, n int) int {
-	if n < 0 || n > 64 {
-		panic(fmt.Errorf("n is out of range: %d", n))
-	}
-	sz := bits.OnesCount64(uv)
-	if sz < n {
-		sz++
-	}
-	return sz
-}
+// Len returns the length in bits of the k^th huffman elem in uv.
+func Len(uv uint64) int { return bits.TrailingZeros64(^uv) }
 
-// AppendElem appends the exact Huffman element onto b.
+// Append appends the exact Huffman element onto b.
 //
-// For AppendElem to function correctly, uv must be a valid Huffman code
+// For Append to function correctly, uv must be a valid Huffman code
 // like those produced by Elem, Seq, or SeqN.
 //
-// AppendElem panics if n is out of range.
-func AppendElem(b []byte, uv uint64, n int) []byte {
-	sz := Len(uv, n)
-	b = slices.Grow(b, sz)
-	return binary.BigEndian.AppendUint64(b, uv)
+// Append panics if n is out of range.
+func Append(b []byte, uv uint64) []byte {
+	for i := 0; i < 64; i += 8 {
+		x := byte(uv >> i)
+		b = append(b, x)
+		if x < 0xff {
+			break
+		}
+	}
+	return b
 }
